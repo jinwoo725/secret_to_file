@@ -5,6 +5,8 @@ class Secret:
         self._n_data = []
         self._b_key = []
         self._key = []
+        self._b_origin = []
+        self._origin = []
         self._legth = 0
         
     def encoding(self, origin:str, new:str, file:str) -> None:
