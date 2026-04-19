@@ -1,119 +1,79 @@
 class Secret:
 
     def __init__(self):
-        self._o_data = []
-        self._n_data = []
-        self._b_key = []
-        self._key = []
-        self._b_origin = []
-        self._origin = []
-        self._legth = 0
-        
-    def encoding(self, origin:str, new:str, file:str) -> None:
+        self._chunk_size = 64 * 1024
+    
+    def encoding(self, origin:str, new:str, output:str) -> None:
         """
         This function is an encoder function
         """
-        with open(origin, "rb") as f:
-            self._o_raw = f.read()
-            self._o_hex = self._o_raw.hex()
-            self._o_hex = [self._o_hex[i:i+64] for i in range(0, len(self._o_hex), 64)]
-        with open(new, "rb") as f:
-            self._n_raw = f.read()
-            self._n_hex = self._n_raw.hex()
-            self._n_hex = [self._n_hex[i:i+64] for i in range(0, len(self._n_hex), 64)]
-        
-        self._n_hex = self._n_hex[:len(self._o_hex)]
-        self._n_hex[-1] = self._n_hex[-1][:len(self._o_hex[-1])]
+        length = 0
+        with open(origin, "rb") as f1, open(new, "rb") as f2, open(output, "wb") as f3:
+            while True:
+                o_data = f1.read(self._chunk_size)
+                n_data = f2.read(self._chunk_size)
+                o_data = o_data.hex()
+                n_data = n_data.hex()
 
-        for i in self._o_hex:
-            self._o_data.append(int(i, 16))
+                if not o_data: break
 
-        for i in self._n_hex:
-            self._n_data.append(int(i, 16))
-        
-        self._legth = len(self._o_hex[-1]) + 2
+                if len(n_data) > len(o_data):
+                    n_data = n_data[:len(o_data)] 
+                    length = len(o_data) + 2
 
-        for i, j in zip(self._o_data, self._n_data):
-            self._b_key.append(i ^ j)
-        
-        for i in self._b_key:
-            self._key.append(hex(i))
+                o_data = (int(o_data, 16))
+                n_data = (int(n_data, 16))
 
-        for i, j in enumerate(self._key):
-            if i == len(self._key) - 1:
-                self._key[i] = self._key[i][:2] + ( "0" * ( self._legth - len(j))) + self._key[i][2:]
-            else:
-                if len(j) != 66:
-                    self._key[i] = self._key[i][:2] + ( "0" * ( 66 - len(j))) + self._key[i][2:]
-        
-        for i, _ in enumerate(self._key):
-            self._key[i] = self._key[i][2:]
-        
-        self._key = "".join(self._key)
-        self._key = bytes.fromhex(self._key)
+                key = o_data ^ n_data
 
-        with open(file, "wb") as f:
-           f.write(self._key)
-        
-        self.restore()
+                key = hex(key)
+
+                if length != 0:
+                    key = key[:2] + ( "0" * ( length - len(key))) + key[2:]
+                else:
+                    if len(key) != 131074:
+                        key = key[:2] + ( "0" * ( 131074 - len(key))) + key[2:]
+                
+                key = key[2:]
+                key = bytes.fromhex(key)
+                
+                f3.write(key)
     
     def decoding(self, new:str, key:str, output:str) -> None:
         """
         This function is an decoder function
         """
-        with open(key, "rb") as f:
-            self._o_raw = f.read()
-            self._o_hex = self._o_raw.hex()
-            self._o_hex = [self._o_hex[i:i+64] for i in range(0, len(self._o_hex), 64)]
-        with open(new, "rb") as f:
-            self._n_raw = f.read()
-            self._n_hex = self._n_raw.hex()
-            self._n_hex = [self._n_hex[i:i+64] for i in range(0, len(self._n_hex), 64)]
+        length = 0
+        with open(key, "rb") as f1, open(new, "rb") as f2, open(output, "wb") as f3:
+            while True:
+                o_data = f1.read(self._chunk_size)
+                n_data = f2.read(self._chunk_size)
+                o_data = o_data.hex()
+                n_data = n_data.hex()
+
+                if not o_data: break
+
+                if len(n_data) > len(o_data):
+                    n_data = n_data[:len(o_data)] 
+                    length = len(o_data) + 2
+
+                o_data = (int(o_data, 16))
+                n_data = (int(n_data, 16))
         
-        self._n_hex = self._n_hex[:len(self._o_hex)]
-        self._n_hex[-1] = self._n_hex[-1][:len(self._o_hex[-1])]
+                chunk = o_data ^ n_data
 
-        for i in self._o_hex:
-            self._o_data.append(int(i, 16))
+                chunk = hex(chunk)
 
-        for i in self._n_hex:
-            self._n_data.append(int(i, 16))
-        
-        self._legth = len(self._o_hex[-1]) + 2
+                if length != 0:
+                    chunk = chunk[:2] + ( "0" * ( length - len(chunk))) + chunk[2:]
+                else:
+                    if len(key) != 131074:
+                        chunk = chunk[:2] + ( "0" * ( 131074 - len(chunk))) + chunk[2:]
+                
+                chunk = chunk[2:]
+                chunk = bytes.fromhex(chunk)
 
-        for i, j in zip(self._o_data, self._n_data):
-            self._b_origin.append(i ^ j)
-        
-        for i in self._b_origin:
-            self._origin.append(hex(i))
-
-        for i, j in enumerate(self._origin):
-            if i == len(self._origin) - 1:
-                self._origin[i] = self._origin[i][:2] + ( "0" * ( self._legth - len(j))) + self._origin[i][2:]
-            else:
-                if len(j) != 66:
-                    self._origin[i] = self._origin[i][:2] + ( "0" * ( 66 - len(j))) + self._origin[i][2:]
-        
-        for i, _ in enumerate(self._origin):
-            self._origin[i] = self._origin[i][2:]
-        
-        self._origin = "".join(self._origin)
-        self._origin = bytes.fromhex(self._origin)
-
-        with open(output, "wb") as f:
-           f.write(self._origin)
-        
-        self.restore()
-
-
-    def restore(self) -> None:
-        self._o_data = []
-        self._n_data = []
-        self._b_key = []
-        self._key = []
-        self._b_origin = []
-        self._origin = []
-        self._legth = 0
+                f3.write(chunk)
 
 def test() -> str:
     """
@@ -123,12 +83,9 @@ def test() -> str:
     start = time()
     secret = Secret()
     secret.encoding("origin.txt", "new.txt", "test_key")
-    secret.decoding("new.txt", "test_key", "origin_decode.txt")
+    secret.decoding("new.txt", "test_key")
     end = time()
-    text1 = f"""+------------------------------------+
-| Time           : {end - start:.5f} seconds   |
-+------------------------------------+\n"""
-    print(text1)
+    print(f"+------------------------------------+\n| Time           : {end - start:.5f} seconds   |\n+------------------------------------+\n")
 
 if __name__ == "__main__":
     test()
