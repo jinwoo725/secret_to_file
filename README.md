@@ -32,6 +32,7 @@ import secret_to_file
 secret = secret_to_file.Secret()
 secret.encoding("origin.txt", "new.txt", "test_key")
 secret.decoding("new.txt", "test_key", "origin_decode.txt")
+secret_to_file.test()
 ```
 **Output**<br>
 ```output
