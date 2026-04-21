@@ -20,9 +20,7 @@ pip install secret_to_file
 
 function<br>
 -
-- **Secret.encoding(str, str, str) -> None**<br>
-- **Secret.decoding(str, str, str) -> None**<br>
-- **test() -> str**
+- **Secret.convert(str, str, str) -> None**<br>
 
 Exam<br>
 -
@@ -30,15 +28,12 @@ Exam<br>
 ```python
 import secret_to_file
 secret = secret_to_file.Secret()
-secret.encoding("origin.txt", "new.txt", "test_key")
-secret.decoding("new.txt", "test_key", "origin_decode.txt")
-secret_to_file.test()
+secret.convert("origin.txt", "new.txt", "test_key")
+secret.convert("new.txt", "test_key", "origin_decode.txt")
 ```
 **Output**<br>
 ```output
-+------------------------------------+
-| Time           : 0.01366 seconds   |
-+------------------------------------+
+
 ```
 
 License<br>
