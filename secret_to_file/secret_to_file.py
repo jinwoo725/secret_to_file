@@ -1,0 +1,37 @@
+class Secret:
+
+    def __init__(self):
+        self._chunk_size = 64 * 1024
+    
+    def convert(self, file1:str, file2:str, output:str) -> None:
+        """
+        This function is an Convert function
+        origin, new, key | new, key, origin
+        """
+        with open(file1, "rb") as f1, open(file2, "rb") as f2, open(output, "wb") as f3:
+            while True:
+                o_data = f1.read(self._chunk_size)
+                n_data = f2.read(self._chunk_size)
+                o_data = o_data.hex()
+                n_data = n_data.hex()
+
+                if not o_data: break
+
+                if len(n_data) > len(o_data):
+                    n_data = n_data[:len(o_data)] 
+
+                length = len(o_data) + 2
+
+                o_data = (int(o_data, 16))
+                n_data = (int(n_data, 16))
+        
+                chunk = o_data ^ n_data
+
+                chunk = hex(chunk)
+
+                chunk = chunk[:2] + ( "0" * ( length - len(chunk))) + chunk[2:]
+                
+                chunk = chunk[2:]
+                chunk = bytes.fromhex(chunk)
+
+                f3.write(chunk)
