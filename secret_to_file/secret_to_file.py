@@ -1,7 +1,21 @@
 class Secret:
 
-    def __init__(self):
-        self._chunk_size = 64 * 1024
+    def __init__(self, *, size:int = 64, prefix:int = 1) -> None:
+        """
+        This function is an init function
+        prefix 0 is byte, 1 is kilobyte, 2 is megabyte
+        size * prefix
+        """
+        match prefix:
+            case 0:
+                scale = 1
+            case 1:
+                scale = 1024
+            case 2:
+                scale = 1024 * 1024
+            case _:
+                scale = 1024
+        self._chunk_size = size * scale
     
     def convert(self, file1:str, file2:str, output:str) -> None:
         """
