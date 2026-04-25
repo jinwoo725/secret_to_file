@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "name": "김철수",
+    "email": "chulsoo.kim@mockmail.com",
+    "phone": "010-1234-5678",
+    "resident_no": "900101-1234567",
+    "address": "서울특별시 강남구 테헤란로 123",
+    "credit_card": "4510-1234-5678-9012"
+  },
+  {
+    "id": 2,
+    "name": "이영희",
+    "email": "younghee.lee@testnet.io",
+    "phone": "010-9876-5432",
+    "resident_no": "950505-2345678",
+    "address": "경기도 판교역로 231",
+    "credit_card": "5402-9876-5432-1098"
+  }
+]

@@ -30,9 +30,12 @@ class Secret:
                 n_data = n_data.hex()
 
                 if not o_data: break
+                
+                if n_data : buffer = n_data
+                else: n_data = buffer
 
                 if len(n_data) > len(o_data):
-                    n_data = n_data[:len(o_data)] 
+                    n_data = n_data[:len(o_data)]
 
                 length = len(o_data) + 2
 
